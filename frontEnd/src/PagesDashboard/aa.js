@@ -1,31 +1,94 @@
-
-
-
-
-
-
-// <main className="main flex flex-col flex-grow -ml-64 md:ml-0 transition-all duration-150 ease-in">
-//           {/* <Header /> */}
-//           <div className="main-content flex flex-col flex-grow p-4">
-//             <div className="hidden md:flex relative mb-4">
-//               <h1 className="font-bold text-2xl text-gray-700">Dashboard</h1>
+// {Array.isArray(this.state.pemesanan) &&
+//     this.state.pemesanan.map((item, index) => {
+//       return (
+//         <tr key={index}>
+//           <td className="px-6 py-4 whitespace-nowrap">
+//             <div className="flex items-center">
+//               <div className="text-sm font-medium text-gray-900">
+//                 {item.nomor_pemesanan}
+//               </div>
 //             </div>
-//             <div className="mb-4">
-//               <div className="flex items-center ">
-//                 <div className="flex rounded w-full">
-//                   <input
-//                     type="text"
-//                     className=" w-full block px-4 py-2 bg-white border-2 border-black/25 rounded-full focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
-//                     placeholder="Search..."
-//                     name="keyword"
-//                     value={this.state.keyword}
-//                     onChange={this.handleChange}
-//                   />
-//                   {/* <button
-//                     className="w-1/8 ml-2 px-4 text-white bg-blue-100 border border-1 border-blue-600 rounded hover:bg-blue-200"
-//                     onClick={this._handleFilter}
-//                   >
-//                     <FontAwesomeIcon icon={faSearch} color="blue" />
-//                   </button> */}
-//                   {this.state.role === "admin" && (
-//                     <button
+//           </td>
+//           <td className="px-6 py-4 whitespace-nowrap">
+//             <div className="text-sm text-gray-900">
+//               {item.nama_pemesan}
+//             </div>
+//           </td>
+//           <td className="px-6 py-4 whitespace-nowrap">
+//             <div className="text-sm text-gray-900">
+//               {item.nama_tamu}
+//             </div>
+//           </td>
+//           <td className="px-6 py-4 whitespace-nowrap">
+//             <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+//               {item.tipe_kamar?.nama_tipe_kamar}
+//             </span>
+//           </td>
+//           <td className="px-6 py-4 whitespace-nowrap">
+//             <div className="text-sm text-gray-900">
+//               {item.jumlah_kamar}
+//             </div>
+//           </td>
+//           <td className="px-6 py-4 whitespace-nowrap">
+//             <div className="text-sm text-gray-900">
+//               {moment(item.tgl_pemesanan).format(
+//                 "DD-MM-YYYY"
+//               )}
+//             </div>
+//           </td>
+//           <td className="px-6 py-4 whitespace-nowrap">
+//             <div className="text-sm text-gray-900">
+//               {moment(item.tgl_check_in).format(
+//                 "DD-MM-YYYY"
+//               )}
+//             </div>
+//           </td>
+//           <td className="px-6 py-4 whitespace-nowrap">
+//             <div className="text-sm text-gray-900">
+//               {moment(item.tgl_check_out).format(
+//                 "DD-MM-YYYY"
+//               )}
+//             </div>
+//           </td>
+//           <td className="px-6 py-4 whitespace-nowrap">
+//             {item.status_pemesanan === "baru" && (
+//               <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800">
+//                 {item.status_pemesanan}
+//               </span>
+//             )}
+//             {item.status_pemesanan === "check_in" && (
+//               <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+//                 {item.status_pemesanan}
+//               </span>
+//             )}
+//             {item.status_pemesanan === "check_out" && (
+//               <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+//                 {item.status_pemesanan}
+//               </span>
+//             )}
+//           </td>
+//           {this.state.role === "resepsionis" && (
+//             <td className="px-6 py-4 whitespace-nowrap">
+//               <button
+//                 className={`bg-green-600 hover:bg-green-700 text-white py-1 px-2 rounded mr-2 ${
+//                   item.status_pemesanan === "check_out"
+//                     ? "opacity-50 cursor-not-allowed"
+//                     : ""
+//                 }`}
+//                 onClick={() =>
+//                   this.handleEditStatus(item)
+//                 }
+//                 disabled={
+//                   item.status_pemesanan === "check_out"
+//                 }
+//               >
+//                 <FontAwesomeIcon
+//                   icon={faPencilSquare}
+//                   size="lg"
+//                 />
+//               </button>
+//             </td>
+//           )}
+//         </tr>
+//       );
+//     })}

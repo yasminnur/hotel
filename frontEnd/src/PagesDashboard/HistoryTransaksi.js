@@ -160,8 +160,8 @@ export default class HistoryTransaksi extends React.Component {
       })
       .catch((error) => {
         console.log("error", error.response.status);
-      });
-  };
+      });
+  };
 
   getBooking = () => {
     let url = "http://localhost:4000/pemesanan/pemesanan";
