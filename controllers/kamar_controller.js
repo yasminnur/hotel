@@ -16,8 +16,8 @@ exports.getAllKamar = async (request, response) => {
     success: true,
     data: kamars,
     message: "All rooms have been loaded",
-    });
-  };
+  });
+};
 
 /** create function for filter */
 exports.findKamar = async (request, response) => {
@@ -39,93 +39,39 @@ exports.findKamar = async (request, response) => {
 
 /** create function for add new kamar */
 // Metode untuk menambahkan kamar baru
-// exports.addKamar = async (request, response) => {
-//   try {
-//     const { nama_tipe_kamar, nomor_kamar } = request.body;
-//     console.log("req body = " + JSON.stringify(request.body));
-
-
-//     // Cari tipe kamar berdasarkan nama
-//     const tipeKamar = await tipeKamarModel.findOne({
-//       where: {
-//         nama_tipe_kamar: {
-//           [Op.substring]: nama_tipe_kamar,
-//         },
-//       },
-//     });
-//     console.log("tipeKamar = "+ tipeKamar.nama_tipe_kamar)
-
-//     if (!tipeKamar) {
-//       return response.json({
-//         success: false,
-//         message: "Tipe kamar yang anda inputkan tidak ada",
-//       });
-//     }
-
-//     // Cek apakah kamar dengan nomor yang sama sudah ada
-//     const existingKamar = await kamarModel.findOne({
-//       where: {
-//         nomor_kamar,
-//       },
-//     });
-
-//     if (existingKamar) {
-//       console.log("exitingkamar= " + existingKamar)
-//       return response.json({
-//         success: false,
-//         message: "Nomor kamar dengan tipe kamar yang anda inputkan sudah ada",
-        
-//       }
-//       );
-//     }
-    
-
-//     // Tambahkan kamar baru
-//     const newKamar = await kamarModel.create({
-//       nomor_kamar,
-//       tipeKamarId: tipeKamar.id,
-//     });
-//     console.log(newKamar)
-
-//     return response.json({
-//       success: true,
-//       data: newKamar,
-//       message: "New Room has been inserted",
-//     });
-//   } catch (error) {
-//     return response.json({
-//       success: false,
-//       message: error.message,
-//     });
-//   }
-// };
 exports.addKamar = async (request, response) => {
-  let nama_tipe_kamar = request.body.nama_tipe_kamar;
-  let tipeKamarId = await tipeKamarModel.findOne({
+  try {
+    let tipeKamarId = request.body.tipeKamarId;
+    console.log("nama tipe kamar = " + tipeKamarId)
+  let tipeId = await tipeKamarModel.findOne({
     where: {
       [Op.and]: [{ nama_tipe_kamar: { [Op.substring]: nama_tipe_kamar } }],
     },
+    attributes: ["id", "nama_tipe_kamar", "createdAt", "updatedAt"],
   });
-  console.log(tipeKamarId);
-
-  if (tipeKamarId === null) {
-    return response.json({
-      success: false,
-      message: `Tipe kamar yang anda inputkan tidak ada`,
-    });
-  } else {
+  console.log("ini hasil let kamar woi"+tipeId)
+    if (!tipeId) {
+      console.log("kosong??")
+      return response.json({
+        success: false,
+        message: `Tipe kamar yang Anda inputkan tidak ada`,
+      });
+    }
+    console.log("ini = "+tipeId)
+    console.log("sampai sini 2")
     let newRoom = {
       nomor_kamar: request.body.nomor_kamar,
-      tipeKamarId: tipeKamarId.id,
+      tipeKamarId: tipeId.id,
     };
-    console.log(newRoom);
+    console.log("tipe kamar id = "+newRoom.tipeKamarId)
+  
     if (newRoom.nomor_kamar === "" || nama_tipe_kamar === "") {
       return response.json({
         success: false,
-        message: `tidak boleh kosong`,
+        message: `Mohon diisi semua`,
       });
     }
-
+  
     let kamars = await kamarModel.findAll({
       where: {
         [Op.and]: [
@@ -135,13 +81,14 @@ exports.addKamar = async (request, response) => {
       },
       attributes: ["id", "nomor_kamar", "tipeKamarId"],
     });
-    console.log(kamars);
+  
     if (kamars.length > 0) {
       return response.json({
         success: false,
-        message: `Kamar yang anda inputkan sudah ada`,
+        message: `Kamar yang Anda inputkan sudah ada`,
       });
     }
+  
     kamarModel
       .create(newRoom)
       .then((result) => {
@@ -157,7 +104,13 @@ exports.addKamar = async (request, response) => {
           message: error.message,
         });
       });
+  } catch (error) {
+    return response.json({
+      success: false,
+      message: error.message,
+    });
   }
+  
 };
 
 exports.updateKamar = async (request, response) => {

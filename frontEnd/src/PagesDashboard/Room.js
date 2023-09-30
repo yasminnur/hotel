@@ -30,6 +30,7 @@ export default class Room extends React.Component {
       keyword: "",
     };
 
+    this._handleKeyPress = this._handleKeyPress.bind(this);
     if (localStorage.getItem("token")) {
       if (
         localStorage.getItem("role") === "admin" ||
@@ -43,6 +44,13 @@ export default class Room extends React.Component {
       }
     }
   }
+
+  _handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      this._handleFilter();
+    }
+  };
 
   headerConfig = () => {
     let header = {
@@ -67,7 +75,7 @@ export default class Room extends React.Component {
     };
     let url = "http://localhost:4000/kamar/find/";
     axios
-      .post(url, data)
+      .post(url, data, this.headerConfig())
       .then((response) => {
         if (response.status === 200) {
           this.setState({
@@ -105,16 +113,11 @@ export default class Room extends React.Component {
 
   handleSave = (e) => {
     e.preventDefault();
-
-    // let form = {
-    //   id: this.state.id,
-    //   nomor_kamar: this.state.nomor_kamar,
-    //   tipeKamarId: this.state.tipeKamarId,
-    // };
     let form = new FormData()
     form.append("id", this.state.id)
     form.append("nomor_kamar", this.state.nomor_kamar)
     form.append("tipeKamarId", this.state.tipeKamarId)
+    console.log("inilah = "+this.state.tipeKamarId)
 
     if (this.state.action === "insert") {
       let url = "http://localhost:4000/kamar/add";
@@ -146,7 +149,7 @@ export default class Room extends React.Component {
   };
 
   handleDrop = (id) => {
-    let url = "http://localhost:4000/kamar/" + id;
+    let url = "http://localhost:4000/kamar/delete/" + id;
     if (window.confirm("Are you sure to delete this room")) {
       axios
         .delete(url, this.headerConfig())
@@ -217,20 +220,29 @@ export default class Room extends React.Component {
 
             <div className="flex mt-2 flex-row-reverse mr-4">
               <div className="flex rounded w-1/2">
-                <input
+                {/* <input
                   type="text"
-                  className="w-2/3 block w-full px-4 py-2 bg-white border rounded-md focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
+                  className="w-2/3 block px-4 py-2 bg-white border rounded-md focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
                   placeholder="Search..."
                   name="keyword"
                   value={this.state.keyword}
                   onChange={this.handleChange}
-                />
-                <button
+                /> */}
+                <input
+                    type="text"
+                    className="w-full block px-4 py-2 bg-white border-2 border-black/25 rounded-full focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
+                    placeholder="Search..."
+                    name="keyword"
+                    value={this.state.keyword}
+                    onChange={this.handleChange}
+                    onKeyPress={this._handleKeyPress}
+                  />
+                {/* <button
                   className="w-1/8 ml-2 px-4 text-white bg-blue-100 border border-1 border-blue-600 rounded hover:bg-blue-200"
                   onClick={this._handleFilter}
                 >
                   <FontAwesomeIcon icon={faSearch} color="blue" />
-                </button>
+                </button> */}
                 {this.state.role === "admin" && (
                   <button
                     className="w-1/3 ml-2 px-4 text-white bg-blue-600 rounded hover:bg-blue-700"
@@ -410,7 +422,8 @@ export default class Room extends React.Component {
                         <option value={item.id}>
                           {item.nama_tipe_kamar}
                         </option>
-                      ))}
+                      ))
+                      }
                     </select>
                   </div>
                   <button

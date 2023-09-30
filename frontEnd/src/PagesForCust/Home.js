@@ -143,7 +143,7 @@ export default class Home extends React.Component {
     }
 
     getpemesanan = () => {
-        let url = "http://localhost:4000/pemesanan"
+        let url = "http://localhost:4000/pemesanan/pemesanan"
         axios.get(url, this.headerConfig())
             .then(response => {
                 this.setState({
@@ -157,7 +157,7 @@ export default class Home extends React.Component {
     }
 
     getTypeRoom = () => {
-        let url = "http://localhost:4000/tipeKamar"
+        let url = "http://localhost:4000/tipeKamar/tipeKamar"
         axios.get(url)
             .then(response => {
                 this.setState({
@@ -171,7 +171,7 @@ export default class Home extends React.Component {
     }
 
     getUser = () => {
-        let url = "http://localhost:4000/user/"
+        let url = "http://localhost:4000/user/user"
         axios.get(url)
             .then(response => {
                 this.setState({

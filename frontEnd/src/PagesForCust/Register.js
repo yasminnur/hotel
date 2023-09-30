@@ -6,11 +6,11 @@ export default class Register extends React.Component {
     constructor() {
         super()
         this.state = {
-            nik_customer: "",
-            customer_name: "",
-            address_customer: "",
-            email_customer: "",
-            password_customer: ""
+            // nik_customer: "",
+            nama: "",
+            email: "",
+            password: "",
+            telepon: "",
         }
     }
 
@@ -24,11 +24,10 @@ export default class Register extends React.Component {
         e.preventDefault()
         
         let data = {
-            nik : this.state.nik_customer,
-            customer_name : this.state.customer_name,
-            address : this.state.address_customer,
-            email : this.state.email_customer,
-            password : this.state.password_customer
+            nama : this.state.nama,
+            email : this.state.email,
+            password: this.state.password,
+            telepon : this.state.telepon
         }
         let url = "http://localhost:8080/customer/register"
         axios.post(url, data)

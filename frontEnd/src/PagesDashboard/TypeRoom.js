@@ -1,25 +1,13 @@
 import React from "react";
 import LinesEllipsis from "react-lines-ellipsis";
 import Sidebar from "../Components/Sidebar";
-// import Header from "../Components/Header";
 import "../styles/typeroom.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  // faTrash,
-  // faPencilSquare,
   faPlus,
-  // faSearch,
-  faEllipsisVertical,
 } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
-import $, { error } from "jquery";
-// import { Fragment, useState } from 'react';
-// import { Menu, Transition } from '@headlessui/react';
-// import { ChevronDownIcon } from '@heroicons/react/solid';
-
-// function classNames(...classes) {
-//   return classes.filter(Boolean).join(' ')
-// }
+import $ from "jquery";
 
 export default class TypeRoom extends React.Component {
   constructor() {
@@ -36,11 +24,6 @@ export default class TypeRoom extends React.Component {
       action: "",
       keyword: "",
       errors: "",
-      dropdownId: null,
-      dropdownRef: null,
-      showModal: false,
-      showDropdown : null,
-      isDropdownOpen : false,
     selectedRoom: null,
     };
 
@@ -86,50 +69,6 @@ export default class TypeRoom extends React.Component {
     });
   };
 
-  handleDropdown = (index) => {
-    const { typeroom } = this.state;
-    const updatedTyperoom = [...typeroom];
-    updatedTyperoom[index].showDropdown = true;
-
-    this.setState({
-      typeroom: updatedTyperoom,
-      selectedRoom: updatedTyperoom[index],
-      isDropdownOpen: true,
-    });
-  };
-
-  handleCloseDropdown = () => {
-    const { typeroom } = this.state;
-    const updatedTyperoom = typeroom.map((item) => ({
-      ...item,
-      showDropdown: false,
-    }));
-  
-    this.setState({
-      typeroom: updatedTyperoom,
-      selectedRoom: null, // Clear the selected room
-    });
-  };
-  
-  handleClickOutsideDropdown = (event) => {
-    if (
-      this.state.selectedRoom &&
-      !event.target.closest(".dropdown-container")
-    ) {
-      this.handleCloseDropdown();
-    }
-  };
-
-  componentDidMount() {
-    document.addEventListener("mousedown", this.handleClickOutsideDropdown);
-  }
-
-
-
-  componentWillUnmount() {
-    document.removeEventListener("mousedown", this.handleClickOutsideDropdown);
-  }
-
   handleCloseDetail = () => {
     $("#modal_detail").hide();
   };
@@ -163,6 +102,7 @@ export default class TypeRoom extends React.Component {
   };
 
   handleEdit = (item) => {
+    // console.log("Tombol Edit diklik.");
     $("#modal_typeroom").show();
     this.setState({
       showModal: true,
@@ -175,35 +115,15 @@ export default class TypeRoom extends React.Component {
     });
   };
 
-  // handleEdit = (item) => {
-  //   this.setState({
-  //     showModal: true,
-  //     id: item.id,
-  //     nama_tipe_kamar: item.nama_tipe_kamar,
-  //     harga: item.harga,
-  //     deskripsi: item.deskripsi,
-  //     foto: item.foto,
-  //     action: "update",
-  //   });
-  //   console.log( "Handle Edit dijalankan");
-  // };
-  
-
-// { this.state.showModal && (
-//   <ModalTyperoom onClose={() => this.setState ({showModal: false})}
-//     />
-//   )
-// }
-
   handleSave = (e) => {
     e.preventDefault();
 
-    let form = new FormData();
-    form.append("id", this.state.id);
-    form.append("nama_tipe_kamar", this.state.nama_tipe_kamar);
-    form.append("harga", this.state.harga);
-    form.append("deskripsi", this.state.deskripsi);
-    form.append("foto", this.state.foto);
+    let form = new FormData()
+    form.append("id", this.state.id)
+    form.append("nama_tipe_kamar", this.state.nama_tipe_kamar)
+    form.append("harga", this.state.harga)
+    form.append("deskripsi", this.state.deskripsi)
+    form.append("foto", this.state.foto)
 
     if (this.state.action === "insert") {
       let url = "http://localhost:4000/tipeKamar/add";
@@ -251,7 +171,7 @@ export default class TypeRoom extends React.Component {
   };
 
   handleDrop = (id) => {
-    let url = "http://localhost:4000/tipeKamar/delete/" + this.state.id;
+    let url = "http://localhost:4000/tipeKamar/delete/" + id;
     if (window.confirm("Are tou sure to delete this type room ? ")) {
       axios
         .delete(url, this.headerConfig())
@@ -314,16 +234,17 @@ export default class TypeRoom extends React.Component {
   componentDidMount() {
     this.getTypeRoom();
     this.checkRole();
-
+    document.addEventListener("mousedown", this.handleClickOutsideDropdown);
     const typeroomWithDropdown = this.state.typeroom.map(item => ({
       ...item,
-      showDropdown: false,
+      showDropdown: false, // Inisialisasi showDropdown ke false untuk setiap jenis kamar
     }));
   
     this.setState({
       typeroom: typeroomWithDropdown,
     });
   }
+  
 
   render() {
     return (
@@ -361,23 +282,23 @@ export default class TypeRoom extends React.Component {
             
             {/* card */}
             {/* <div className="flex shadow-lg h-48" onClick={() => this.handleDetail(item)}> */}
-            <div className="sm:container mx-auto font-[inter] flex flex-wrap justify-start gap-2">
+            <div className="sm:container  mx-auto font-[inter] flex flex-wrap justify-start gap-2" >
               {this.state.typeroom.map((item, index) => {
-                console.log("ini item"+item)
-                console.log("this typeroom" + this.state.typeroom);
+                console.log('Show dropdown for index', index, ':', item.showDropdown);
 
                 return (
-                  <div className="flex shadow-lg h-48" key={index}>
-                    {/* {" "} */}
-                    {/* ukuran card */}
+                  <div className="flex-inline shadow-lg h-82 w-64" key={index} >
+                    <div className="bg-red-200" onClick={() => this.handleDetail(item)}>
+                    <div className="mx-auto mt-3 w-[230px] h-[160px]">
                     <img
-                      className="object-cover w-40 h-full"
+                      className="object-cover w-full h-full"
                       src={"http://localhost:4000/photo/" + item.foto}
                       alt=""
-                    />
-                    <div className="px-6 py-4 w-52 flex">
-                      <div>
-                        <div className="font-bold text-xl w-40  text-black-700 uppercase">
+                      />
+                      </div>
+                    {/* <div className="px-6 py-4 w-52 flex bg-blue-300"> */}
+                      <div className=" w-[230px] mx-auto mb-3">
+                        <div className="font-bold text-xl pt-2 text-black-700 uppercase">
                           {item.nama_tipe_kamar}
                         </div>
                         <p className="text-sm -mb-[0.5px] text-black-800 opacity-70">
@@ -393,89 +314,27 @@ export default class TypeRoom extends React.Component {
                             /night
                           </p>
                         </div>
-                        {/* {this.state.showModal && (
-        <ModalDetailKamar
-          item={this.state.selectedRoom}
-          onClose={() => this.setState({ showModal: false })}
-        />
-      )} */}
-                        <div>
-                          <button
-                            className="w-[70px] bg-[#354D51] text-white font-[inter] p-1 w-1/2
-                             focus:outline-none focus:shadow-outline"
-                            type="button"
-                            onClick={() => this.handleDetail(item)}
-                          >
-                            Detail
-                          </button>
-                        </div>
-                      </div>
-                      </div>
-
-                      <div className="relative dropdown-container">
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            this.handleDropdown(index)}}
-                          className="focus:outline-none mr-4 mt-6"
-                        >
-                          <FontAwesomeIcon 
-                            icon={faEllipsisVertical}
-                            color="gray"
-                          />
-                        </button>
-
-                        {/* dropdown */}
-                        
-                      {/* {item.showDropdown && ( */}
-                         {/* {this.state.typeroom[index].showDropdown && ( */}
-                        
-                         {/* console.log("ini jugak item = "+item), */}
-                         { this.state.isDropdownOpen && (
-                          <div
-                            className="absolute right-0 mt-2 bg-white border border-gray-200 rounded-md shadow-lg"
-                            ref={(ref) => {
-                              this.state.dropdownRef = ref;
-                            }}
-                          >
-                        <ul className="p-0 list-none">
-                          <li className="px-4 py-2 hover:bg-gray-100">
-                            <button
-                              type = "button"
-                              onClick={(e) => {
-                                e.stopPropagation(); // Ini akan mencegah event klik menyebar ke atas
-                                this.handleEdit(item);
-                              }}>
-                        
-                            Edit
-                            </button>
-                            </li>
-                              <li className="px-4 py-2 hover:bg-gray-100">
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation(); // Ini akan mencegah event klik menyebar ke atas
-                                    this.handleDrop(item);
-                                  }}
-                                >
-                                  Delete
-                                </button>
-                              </li>
-                            </ul>
-                        </div>
-                        
-                          )}    
-                        {/* element to handle outside click */}
-                      {/* {item.showDropdown && ( */}
-                      {item.showDropdown && (
-      <div
-        className="fixed inset-0 z-10"
-        onClick={this.handleCloseDropdown}
-      />
-    )}
                       </div>
                     </div>
-                  
+                    <div className="flex justify-between mx-2 mb-2">
+                    <button
+                            className="bg-[#354D51] text-white font-[inter] p-1 w-20
+                             focus:outline-none focus:shadow-outline"
+                            type="button"
+                            onClick={() => this.handleEdit(item)}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className="bg-[#354D51] text-white font-[inter] p-1 w-20
+                             focus:outline-none focus:shadow-outline"
+                            type="button"
+                            onClick={() => this.handleDrop(item.id)}
+                          >
+                            Delete
+                          </button>
+                      </div>
+                      </div>
                 );
               }
               )}

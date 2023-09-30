@@ -2,6 +2,7 @@
 // require(`../models/index`).tipeKamar;
 const { request, response } = require("express");
 const tipeKamarModel = require("../models/index").tipe_kamar; //bagian .tipe_kamar ini ternyata harus sama kayak nama di models nya
+// const userModel = require("../models/index").userModel;
 const Op = require("sequelize").Op;
 const path = require("path");
 const upload = require(`./upload-photo`).single(`foto`);
@@ -91,6 +92,7 @@ exports.updateTipeKamar = (request, response) => {
       });
     }
     /** prepare data that has been changed */
+    let id = request.params.id;
     let dataTipeKamar = {
       nama_tipe_kamar: request.body.nama_tipe_kamar,
       harga: request.body.harga,
@@ -98,12 +100,24 @@ exports.updateTipeKamar = (request, response) => {
       foto: request.file.filename,
     };
 
+    if (request.file) {
+      const selectedtipeKamar = await tipeKamarModel.findOne({
+        where: { id: id },
+      });
+      const oldFototipeKamar = selectedtipeKamar.foto;
+
+      const pathImage = path.join(__dirname, `../photo`, oldFototipeKamar);
+      if (fs.existsSync(pathImage)) {
+        fs.unlink(pathImage, (error) => console.log(error));
+      }
+      dataTipeKamar.foto = request.file.filename;
+    }
     /** define id tipeKamar that will be update */
-    let idTipeKamar = request.params.id;
+    // let id = request.params.id;
 
     /** execute update data based on defined id tipeKamar */
     tipeKamarModel
-      .update(dataTipeKamar, { where: { id: idTipeKamar } })
+      .update(dataTipeKamar, { where: { id: id } })
       .then((result) => {
         /** if update's process success */
         return response.json({

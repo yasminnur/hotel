@@ -62,6 +62,7 @@ exports.addPemesanan = async (request, response) => {
       },
     ],
   });
+  console.log("ini hasil let kamar"+kamar)
 
   let nama_user = request.body.nama_user;
   let userId = await userModel.findOne({

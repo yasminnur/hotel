@@ -270,6 +270,12 @@ export default class User extends React.Component {
                           >
                             Email
                           </th>
+                          <th
+                            scope="col"
+                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          >
+                            Role
+                          </th>
                           
                           {this.state.role === "admin" && (
                             <th
@@ -307,6 +313,11 @@ export default class User extends React.Component {
                             <td className="px-6 py-4 whitespace-nowrap">
                                 <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800">
                                 {item.email}
+                                  </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800">
+                                {item.role}
                                   </span>
                             </td>
                             {this.state.role === "admin" && (

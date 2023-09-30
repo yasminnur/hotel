@@ -6,8 +6,8 @@ export default class Login extends React.Component {
     constructor() {
         super()
         this.state = {
-            email_customer: "",
-            password_customer: "",
+            email: "",
+            password: "",
             isModalOpen: false,
             logged: false,
         }
@@ -22,22 +22,22 @@ export default class Login extends React.Component {
     handleLogin = (e) => {
         e.preventDefault()
         let data = {
-            email: this.state.email_customer,
-            password: this.state.password_customer
+            email: this.state.email,
+            password: this.state.password
         }
-        let url = "http://localhost:8080/customer/login"
+        let url = "http://localhost:4000/customer/login";
         axios.post(url, data)
             .then(response => {
                 this.setState({ logged: response.data.data.logged })
                 if (response.status === 200) {
-                    let id = response.data.data.id_customer
+                    let id = response.data.data.id
                     let token = response.data.data.token
-                    let role = response.data.data.role
                     let email = response.data.data.email
+                    let nama = response.data.data.nama
                     localStorage.setItem("id", id)
                     localStorage.setItem("token", token)
-                    localStorage.setItem("role", role)
                     localStorage.setItem("email", email)
+                    localStorage.setItem("nama", nama)
                     alert("Success Login")
                     window.location.href = "/home"
                 } else {
