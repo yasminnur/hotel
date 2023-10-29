@@ -6,12 +6,12 @@ const app = express();
 app.use(express.json());
 /** load tipeKamar's controller */
 const tipeKamarController = require(`../controllers/tipe_kamar_controller`);
-// const auth = require(`../auth/auth`);
+const auth = require(`../auth/auth`);
 
 /** create route to get data with method "GET" */
 app.get("/tipeKamar",tipeKamarController.getAlltipeKamar);
-app.post("/add", tipeKamarController.addTipeKamar);
+app.post("/add", auth.authVerify, tipeKamarController.addTipeKamar);
 app.post("/find", tipeKamarController.findTipeKamar);
-app.put("/update/:id", tipeKamarController.updateTipeKamar);
-app.delete("/delete/:id", tipeKamarController.deleteTipeKamar);
+app.put("/update/:id", auth.authVerify, tipeKamarController.updateTipeKamar);
+app.delete("/delete/:id", auth.authVerify, tipeKamarController.deleteTipeKamar);
 module.exports = app;

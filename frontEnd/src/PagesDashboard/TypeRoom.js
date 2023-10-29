@@ -3,9 +3,7 @@ import LinesEllipsis from "react-lines-ellipsis";
 import Sidebar from "../Components/Sidebar";
 import "../styles/typeroom.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPlus,
-} from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import $ from "jquery";
 
@@ -24,10 +22,8 @@ export default class TypeRoom extends React.Component {
       action: "",
       keyword: "",
       errors: "",
-    selectedRoom: null,
+      selectedRoom: null,
     };
-
-    this._handleKeyPress = this._handleKeyPress.bind(this);
 
     if (localStorage.getItem("token")) {
       if (
@@ -42,13 +38,6 @@ export default class TypeRoom extends React.Component {
       }
     }
   }
-
-  _handleKeyPress = (event) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      this._handleFilter();
-    }
-  };
 
   headerConfig = () => {
     let header = {
@@ -102,7 +91,6 @@ export default class TypeRoom extends React.Component {
   };
 
   handleEdit = (item) => {
-    // console.log("Tombol Edit diklik.");
     $("#modal_typeroom").show();
     this.setState({
       showModal: true,
@@ -118,12 +106,12 @@ export default class TypeRoom extends React.Component {
   handleSave = (e) => {
     e.preventDefault();
 
-    let form = new FormData()
-    form.append("id", this.state.id)
-    form.append("nama_tipe_kamar", this.state.nama_tipe_kamar)
-    form.append("harga", this.state.harga)
-    form.append("deskripsi", this.state.deskripsi)
-    form.append("foto", this.state.foto)
+    let form = new FormData();
+    form.append("id", this.state.id);
+    form.append("nama_tipe_kamar", this.state.nama_tipe_kamar);
+    form.append("harga", this.state.harga);
+    form.append("deskripsi", this.state.deskripsi);
+    form.append("foto", this.state.foto);
 
     if (this.state.action === "insert") {
       let url = "http://localhost:4000/tipeKamar/add";
@@ -144,29 +132,39 @@ export default class TypeRoom extends React.Component {
           this.handleClose();
         })
         .catch((error) => {
-          console.log("error add data", error.response.status);
-          if (error.response.status === 500) {
-            window.alert("Failed to add data");
+          console.log("error add data", error);
+          if (error.response && (error.response.status === 500 || error.response.status === 404 || error.response.status === 400)) {
+            window.alert(error.response.data.message);
           }
         });
+        // .catch((error) => {
+        //   console.log("error add data", error.response.status);
+        //   if (error.response.status === 500) {
+        //     window.alert("Failed to add data");
+        //   }
+        // });
     } else {
       let url = "http://localhost:4000/tipeKamar/update/" + this.state.id;
       axios
         .put(url, form, this.headerConfig())
         .then((response) => {
-          if (response.data.success === false) {
-            return this.setState({ errors: response.data.message });
+          if (response.data.message === `Validation error`) {
+            window.alert("nama tipe kamar sudah digunakan");
+          } else {
+            alert("Success update data");
+            this.getTypeRoom();
+            this.handleClose();
           }
-          this.getTypeRoom();
-          this.handleClose();
-          console.log(response);
-          this.setState({ errors: "" });
-          console.log(response);
         })
         .catch((error) => {
-          console.log(error);
-          this.setState({ error: error });
+          console.log("error add data", error);
+          if (error.response && (error.response.status === 500 || error.response.status === 404 || error.response.status === 400)) {
+            window.alert(error.response.data.message);
+          }
         });
+        // .catch((error) => {
+        //   console.log(error);
+        // });
     }
   };
 
@@ -177,7 +175,7 @@ export default class TypeRoom extends React.Component {
         .delete(url, this.headerConfig())
         .then((response) => {
           console.log(response.data.message);
-          this.getTypeRoom();
+          window.location.reload();
         })
         .catch((error) => {
           if (error.response.status === 500) {
@@ -205,7 +203,10 @@ export default class TypeRoom extends React.Component {
         }
       })
       .catch((error) => {
-        console.log("error", error.response.status);
+        console.log("error add data", error);
+        if (error.response && (error.response.status === 500 || error.response.status === 404 || error.response.status === 400)) {
+          window.alert(error.response.data.message);
+        }
       });
   };
 
@@ -234,43 +235,35 @@ export default class TypeRoom extends React.Component {
   componentDidMount() {
     this.getTypeRoom();
     this.checkRole();
-    document.addEventListener("mousedown", this.handleClickOutsideDropdown);
-    const typeroomWithDropdown = this.state.typeroom.map(item => ({
-      ...item,
-      showDropdown: false, // Inisialisasi showDropdown ke false untuk setiap jenis kamar
-    }));
-  
-    this.setState({
-      typeroom: typeroomWithDropdown,
-    });
   }
-  
 
   render() {
     return (
-      <div className="flex flex-row min-h-screen bg-gray-100 text-gray-800">
+      <div className="flex flex-row min-h-screen text-gray-800">
         <Sidebar />
-        <main className="main flex flex-col flex-grow -ml-64 md:ml-0 transition-all duration-150 ease-in">
+        <main className="main flex flex-col flex-grow -ml-64 md:ml-64 transition-all duration-150 ease-in">
           <div className="main-content flex flex-col flex-grow p-4">
-            <div className="hidden md:flex relative mb-4">
-              <h1 className="font-bold text-2xl text-gray-700">Type Room</h1>
+            <div className="mx-4 mb-5 mt-4">
+              <h1 className="font-bold text-2xl uppercase text-gray-700">
+                Type Room
+              </h1>
             </div>
-            <div className="mb-4">
+            <div className="mx-4 mb-2">
               <div className="flex items-center ">
                 <div className="flex rounded w-full">
                   <input
                     type="text"
-                    className="w-full block px-4 py-2 bg-white border-2 border-black/25 rounded-full focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
+                    className="w-[540px] block px-4 py-2 bg-white border-2 border-black/25 rounded-full focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
                     placeholder="Search..."
                     name="keyword"
                     value={this.state.keyword}
                     onChange={this.handleChange}
-                    onKeyPress={this._handleKeyPress}
+                    onKeyUp={this._handleFilter}
                   />
 
                   {this.state.role === "admin" && (
                     <button
-                      className="w-36 ml-2 px-4 font-regular bg-[#354D51]/50 text-black rounded-full hover:bg-blue-700"
+                      className="w-36 ml-5 px-4 font-regular bg-[#354D51]/50 text-black rounded-full hover:bg-blue-700"
                       onClick={() => this.handleAdd()}
                     >
                       <FontAwesomeIcon icon={faPlus} /> Add
@@ -279,24 +272,23 @@ export default class TypeRoom extends React.Component {
                 </div>
               </div>
             </div>
-            
-            {/* card */}
-            {/* <div className="flex shadow-lg h-48" onClick={() => this.handleDetail(item)}> */}
-            <div className="sm:container  mx-auto font-[inter] flex flex-wrap justify-start gap-2" >
-              {this.state.typeroom.map((item, index) => {
-                console.log('Show dropdown for index', index, ':', item.showDropdown);
 
+            {/* card */}
+            <div className="font-[inter] flex flex-wrap justify-start">
+              {this.state.typeroom.map((item, index) => {
                 return (
-                  <div className="flex-inline shadow-lg h-82 w-64" key={index} >
-                    <div className="bg-red-200" onClick={() => this.handleDetail(item)}>
-                    <div className="mx-auto mt-3 w-[230px] h-[160px]">
-                    <img
-                      className="object-cover w-full h-full"
-                      src={"http://localhost:4000/photo/" + item.foto}
-                      alt=""
-                      />
+                  <div
+                    className="flex-inline rounded-lg shadow-lg h-82 w-[255px] m-4"
+                    key={index}
+                  >
+                    <div className="" onClick={() => this.handleDetail(item)}>
+                      <div className="mx-auto mt-3 w-[230px] h-[160px]">
+                        <img
+                          className="object-cover w-full h-full"
+                          src={"http://localhost:4000/photo/" + item.foto}
+                          alt=""
+                        />
                       </div>
-                    {/* <div className="px-6 py-4 w-52 flex bg-blue-300"> */}
                       <div className=" w-[230px] mx-auto mb-3">
                         <div className="font-bold text-xl pt-2 text-black-700 uppercase">
                           {item.nama_tipe_kamar}
@@ -304,7 +296,7 @@ export default class TypeRoom extends React.Component {
                         <p className="text-sm -mb-[0.5px] text-black-800 opacity-70">
                           <LinesEllipsis
                             text={item.deskripsi}
-                            maxLine="3"
+                            maxLine="1"
                             ellipsis="..."
                           />
                         </p>
@@ -317,34 +309,32 @@ export default class TypeRoom extends React.Component {
                       </div>
                     </div>
                     <div className="flex justify-between mx-2 mb-2">
-                    <button
-                            className="bg-[#354D51] text-white font-[inter] p-1 w-20
+                      <button
+                        className="bg-[#354D51] text-white font-[inter] p-1 w-20
                              focus:outline-none focus:shadow-outline"
-                            type="button"
-                            onClick={() => this.handleEdit(item)}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            className="bg-[#354D51] text-white font-[inter] p-1 w-20
+                        type="button"
+                        onClick={() => this.handleEdit(item)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="bg-red-700 text-white font-[inter] p-1 w-20
                              focus:outline-none focus:shadow-outline"
-                            type="button"
-                            onClick={() => this.handleDrop(item.id)}
-                          >
-                            Delete
-                          </button>
-                      </div>
-                      </div>
+                        type="button"
+                        onClick={() => this.handleDrop(item.id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
                 );
-              }
-              )}
-              </div>
-              {/* </div> */}
+              })}
+            </div>
 
             <footer className="footer px-4 py-2 ">
               <div className="footer-content ">
                 <p className="text-sm text-gray-600 text-center ">
-                  © 2023. All rights reserved.
+                  Copyright © 2023 Nyaman Hotel
                 </p>
               </div>
             </footer>
@@ -352,7 +342,6 @@ export default class TypeRoom extends React.Component {
         </main>
 
         {/* Modal Form */}
-        {this.state.showModal && (
         <div
           id="modal_typeroom"
           tabindex="-1"
@@ -383,7 +372,7 @@ export default class TypeRoom extends React.Component {
               </button>
               <div className="px-6 py-6 lg:px-8">
                 <h3 className="mb-4 text-xl font-medium text-gray-900 dark:text-black">
-                  {this.state.action === "insert" ? "Add" : "Edit"} Type Room
+                  Type Room
                 </h3>
                 <form
                   className="space-y-6"
@@ -461,8 +450,6 @@ export default class TypeRoom extends React.Component {
                     />
                   </div>
 
-                  {this.state.errors && <div>Error : {this.state.errors}</div>}
-
                   <button
                     type="submit"
                     className="w-full text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
@@ -474,58 +461,59 @@ export default class TypeRoom extends React.Component {
             </div>
           </div>
         </div>
-)}
+
         {/* modal detail */}
         <div
           id="modal_detail"
           tabindex="-1"
-          className="overflow-x-auto fixed top-0 left-0 right-0 z-50 hidden w-full pt-10 pb-10 pl-96 md:inset-0 h-modal md:h-full bg-tranparent bg-black bg-opacity-50"
+          class="overflow-x-auto fixed top-0 left-0  right-0 z-50 hidden w-full py-8 px-16 md:inset-0 h-modal md:h-full  bg-black bg-opacity-50"
         >
-          <div className="relative w-[900px] md:h-auto border-5 border-gray-500 rounded-lg shadow shadow-2xl items-center">
-            <div className="relative bg-white rounded-lg">
-              <div className="flex items-center justify-between p-3 border-b rounded-t border-gray-500 ">
-                <h3 className="p-2 text-xl font-medium text-gray-900 ">
-                  {this.state.nama_tipe_kamar} Room
-                </h3>
-                <button
-                  type="button"
-                  className="text-gray-400 bg-transparent hover:bg-red-500 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center hover:bg-gray-600 hover:text-white"
-                  data-modal-hide="medium-modal"
-                  onClick={() => this.handleCloseDetail()}
+          <div className="relative w-full  md:h-auto border-5 border-gray-500 rounded-lg shadow-2xl items-center">
+            {/* <!-- Modal header --> */}
+            <div class="flex px-5 py-1 h-[70px] items-center justify-between bg-slate-200 border-b rounded-t border-gray-500">
+              <button
+                type="button"
+                class="text-gray-400 bg-transparent rounded-lg text-sm  ml-auto inline-flex items-center hover:bg-gray-600 hover:text-red-700"
+                data-modal-hide="medium-modal"
+                onClick={() => this.handleCloseDetail()}
+              >
+                <svg
+                  aria-hidden="true"
+                  class="w-5 h-5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  <svg
-                    aria-hidden="true"
-                    className="w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                      clip-rule="evenodd"
-                    ></path>
-                  </svg>
-                  <span className="sr-only">Close modal</span>
-                </button>
+                  <path
+                    fill-rule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                <span class="sr-only">Close modal</span>
+              </button>
+            </div>
+            {/* <!-- Modal body --> */}
+            <div class="flex p-6 h-[550px] bg-slate-100">
+              <div className="w-1/2">
+                <img
+                  class="rounded-md p-2 w-full h-full "
+                  src={"http://localhost:4000/photo/" + this.state.foto}
+                  alt=""
+                />
               </div>
-              <div className="h-[520px] w-[900px]">
-                  <img
-                    className="rounded-b-lg w-full h-[520px] cover"
-                    src={"http://localhost:4000/" + this.state.foto}
-                    alt=""
-                  />
-                <div className="px-2 py-4">
-                  <div className="font-bold text-2xl mb-2">
-                    {this.state.nama_tipe_kamar}
-                  </div>
-                  <div className="font-bold text-xl mb-2 text-blue-600">
-                    {this.state.harga}/night
-                  </div>
-                  <p className="text-black-700 text-base">
-                    {this.state.deskripsi}
-                  </p>
+              <div class=" w-1/2 px-6 pt-10 pb-5">
+                <h3 class="font-bold text-2xl mb-2 uppercase">
+                  {this.state.nama_tipe_kamar} room
+                </h3>
+                <div class="font-bold text-xl mb-5 text-blue-600">
+                  {this.state.harga}/night
                 </div>
+                <p class="text-black-700 text-base">
+                  {" "}
+                  <span className="block">Deskripsi : </span>{" "}
+                  {this.state.deskripsi}
+                </p>
               </div>
             </div>
           </div>

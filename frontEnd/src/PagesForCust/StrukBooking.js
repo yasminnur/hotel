@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import '../styles/struk.css'
 
 export default class StrukBooking extends React.Component {
@@ -11,7 +11,7 @@ export default class StrukBooking extends React.Component {
 
                     <div className="invoice-details">
                         <div>
-                            <p><span className="font-semibold">Hotel Name:</span> Slippy</p>
+                            <p><span className="font-semibold">Hotel Name:</span> Nyaman</p>
                             <p><span className="font-semibold mt-2">Address:</span> Malang</p>
                             <p><span className="font-semibold mt-2">Phone:</span> 0331-1234</p>
                         </div>

@@ -6,8 +6,8 @@ app.use(express.json())
 
 app.get("/detailPemesanan", detailPemesananController.getAlldetailPemesanan)
 app.post("/add", detailPemesananController.adddetailPemesanan)
-app.get("/find", detailPemesananController.finddetailPemesanan)
+// app.get("/find", detailPemesananController.finddetailPemesanan)
 app.put("/update/:id", detailPemesananController.updatedetailPemesanan)
-app.delete("/delete/:id", detailPemesananController.deletedetailPemesanan)
+// app.delete("/delete/:id", detailPemesananController.deletedetailPemesanan)
 
 module.exports = app

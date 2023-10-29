@@ -8,9 +8,11 @@ app.use(express.json());
 const pemesananController = require(`../controllers/pemesanan_controller`);
 const auth = require(`../auth/auth`);
 
-app.get("/pemesanan", auth, pemesananController.getPemesanan);
-app.post("/add", auth, pemesananController.addPemesanan);
-app.post("/find", auth, pemesananController.findPemesanan);
-app.put("/update/:id", auth, pemesananController.updatePemesanan);
-app.delete("/delete/:id", auth, pemesananController.deletePemesanan);
+app.get("/pemesanan", pemesananController.getAllPemesanan);
+app.post("/add", pemesananController.addPemesanan);
+// app.post("/findCheck", pemesananController.findPemesananCheck);
+app.post("/find", pemesananController.findPemesanan);
+app.post("/findCust", pemesananController.findPemesananCust);
+app.get("/getByUser/:email", pemesananController.getByUser);
+app.put("/updateStatusPemesanan/:id", pemesananController.updateStatusBooking)
 module.exports = app;

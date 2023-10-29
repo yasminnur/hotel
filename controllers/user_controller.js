@@ -1,4 +1,3 @@
-const { request, response } = require("express");
 const express = require("express");
 const app = express();
 const md5 = require("md5");
@@ -13,6 +12,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const jsonwebtoken = require("jsonwebtoken");
 const SECRET_KEY = "secretcode";
 
+// LOGIN
 exports.login = async (request, response) => {
   try {
     const params = {
@@ -21,10 +21,10 @@ exports.login = async (request, response) => {
     };
     console.log(params.email);
     const findUser = await userModel.findOne({ where: params });
+    console.log("ini findUsernya = "+findUser)
     if (findUser == null) {
       return response.status(404).json({
         message: "email or password doesn't match",
-        // err: error,
       });
     }
     console.log(findUser);
@@ -55,9 +55,11 @@ exports.login = async (request, response) => {
   }
 };
 
-//mendaptkan semua data dalam tabel
+//GET ALL USER
 exports.getAll = async (request, response) => {
-  let user = await userModel.findAll();
+  let user = await userModel.findAll({
+    order : [['createdAt', 'DESC']],
+  });
   return response.json({
     success: true,
     data: user,
@@ -65,7 +67,7 @@ exports.getAll = async (request, response) => {
   });
 };
 
-//mendaptkan salah satu data dalam tabel (where clause)
+// FIND USER
 exports.findUser = async (request, response) => {
   let keyword = request.body.keyword;
 
@@ -85,7 +87,7 @@ exports.findUser = async (request, response) => {
   });
 };
 
-//menambah data
+//ADD USER
 exports.addUser = (request, response) => {
   upload(request, response, async (error) => {
     if (error) {
@@ -122,7 +124,7 @@ exports.addUser = (request, response) => {
   });
 };
 
-//mengupdate salah satu data
+// UPDATE USER
 exports.updateUser = async (request, response) => {
   upload(request, response, async (err) => {
     if (err) {
@@ -131,7 +133,6 @@ exports.updateUser = async (request, response) => {
     let id = request.params.id;
     let dataUser = {
       nama_user: request.body.nama_user,
-      foto: request.file.filename,
       email: request.body.email,
       password: md5(request.body.password),
       role: request.body.role,
@@ -167,7 +168,7 @@ exports.updateUser = async (request, response) => {
   });
 };
 
-//mengahapus salah satu data
+//DELETE USER
 exports.deleteUser = async (request, response) => {
   let idUser = request.params.id;
   const user = await userModel.findOne({ wher: { id: idUser } });

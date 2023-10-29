@@ -29,8 +29,8 @@ export default class Room extends React.Component {
       action: "",
       keyword: "",
     };
-
     this._handleKeyPress = this._handleKeyPress.bind(this);
+
     if (localStorage.getItem("token")) {
       if (
         localStorage.getItem("role") === "admin" ||
@@ -46,7 +46,7 @@ export default class Room extends React.Component {
   }
 
   _handleKeyPress = (event) => {
-    if (event.key === "Enter") {
+    if (event.keyword === "Enter") {
       event.preventDefault();
       this._handleFilter();
     }
@@ -73,7 +73,7 @@ export default class Room extends React.Component {
     let data = {
       keyword: this.state.keyword,
     };
-    let url = "http://localhost:4000/kamar/find/";
+    let url = "http://localhost:4000/kamar/find";
     axios
       .post(url, data, this.headerConfig())
       .then((response) => {
@@ -113,11 +113,12 @@ export default class Room extends React.Component {
 
   handleSave = (e) => {
     e.preventDefault();
-    let form = new FormData()
-    form.append("id", this.state.id)
-    form.append("nomor_kamar", this.state.nomor_kamar)
-    form.append("tipeKamarId", this.state.tipeKamarId)
-    console.log("inilah = "+this.state.tipeKamarId)
+
+    let form = {
+      id: this.state.id,
+      nomor_kamar: +this.state.nomor_kamar,
+      tipeKamarId: +this.state.tipeKamarId,
+    };
 
     if (this.state.action === "insert") {
       let url = "http://localhost:4000/kamar/add";
@@ -125,15 +126,22 @@ export default class Room extends React.Component {
         .post(url, form, this.headerConfig())
         .then((response) => {
           this.getRoom();
-          this.getTypeRoom();
           this.handleClose();
         })
         .catch((error) => {
-          console.log("error add data", error.response.status);
-          if (error.response.status === 500) {
-            window.alert("Failed to add data");
+          console.log("error add data", error);
+          if (error.response && (error.response.status === 500 || error.response.status === 404 || error.response.status === 400)) {
+            window.alert(error.response.data.message);
           }
         });
+        // .catch((error) => {
+        //   console.log("error add data", error.response.status);
+        //   if (error.response === "Kamar yang Anda inputkan sudah ada") {
+        //     window.alert("The room number already exists");
+        //   } else {
+        //     window.alert("Failed to add data");
+        //   }
+        // });
     } else {
       let url = "http://localhost:4000/kamar/update/" + this.state.id;
       axios
@@ -150,7 +158,7 @@ export default class Room extends React.Component {
 
   handleDrop = (id) => {
     let url = "http://localhost:4000/kamar/delete/" + id;
-    if (window.confirm("Are you sure to delete this room")) {
+    if (window.confirm("Are tou sure to delete this type room ? ")) {
       axios
         .delete(url, this.headerConfig())
         .then((response) => {
@@ -166,7 +174,7 @@ export default class Room extends React.Component {
   };
 
   getRoom = () => {
-    let url = "http://localhost:4000/kamar/kamar/";
+    let url = "http://localhost:4000/kamar/kamar";
     axios
       .get(url, this.headerConfig())
       .then((response) => {
@@ -210,51 +218,41 @@ export default class Room extends React.Component {
 
   render() {
     return (
-      <div className="flex flex-row min-h-screen bg-gray-100 text-gray-800">
+      <div className="flex flex-row min-h-screen bg-white text-gray-800">
         <Sidebar />
-        <main className="main flex flex-col flex-grow -ml-64 md:ml-0 transition-all duration-150 ease-in">
-          <Header />
+        <main className="main flex flex-col flex-grow -ml-64 md:ml-64 transition-all duration-150 ease-in">
           <div className="main-content flex flex-col flex-grow p-4">
-            <h1 className="font-bold text-xl text-black-700">Daftar Room</h1>
-            <p className="text-gray-700">For Room in Hotel Slippy</p>
-
-            <div className="flex mt-2 flex-row-reverse mr-4">
-              <div className="flex rounded w-1/2">
-                {/* <input
-                  type="text"
-                  className="w-2/3 block px-4 py-2 bg-white border rounded-md focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
-                  placeholder="Search..."
-                  name="keyword"
-                  value={this.state.keyword}
-                  onChange={this.handleChange}
-                /> */}
-                <input
+            <div className="mx-5 mb-5 mt-4">
+              <h1 className="font-bold text-2xl uppercase text-gray-700">
+                Room
+              </h1>
+            </div>
+            <div className="mx-5 mb-3">
+              <div className="flex items-center ">
+                <div className="flex rounded w-full">
+                  <input
                     type="text"
-                    className="w-full block px-4 py-2 bg-white border-2 border-black/25 rounded-full focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
+                    className="w-[540px] block px-4 py-2 bg-white border-2 border-black/25 rounded-full focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
                     placeholder="Search..."
                     name="keyword"
                     value={this.state.keyword}
                     onChange={this.handleChange}
-                    onKeyPress={this._handleKeyPress}
+                    onKeyUp={this._handleFilter}
                   />
-                {/* <button
-                  className="w-1/8 ml-2 px-4 text-white bg-blue-100 border border-1 border-blue-600 rounded hover:bg-blue-200"
-                  onClick={this._handleFilter}
-                >
-                  <FontAwesomeIcon icon={faSearch} color="blue" />
-                </button> */}
-                {this.state.role === "admin" && (
-                  <button
-                    className="w-1/3 ml-2 px-4 text-white bg-blue-600 rounded hover:bg-blue-700"
-                    onClick={() => this.handleAdd()}
-                  >
-                    <FontAwesomeIcon icon={faPlus} size="" /> Add
-                  </button>
-                )}
+
+                  {this.state.role === "admin" && (
+                    <button
+                      className="w-36 ml-5 px-4 font-regular bg-[#354D51]/50 text-black rounded-full hover:bg-blue-700"
+                      onClick={() => this.handleAdd()}
+                    >
+                      <FontAwesomeIcon icon={faPlus} /> Add
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
 
-            <div className="flex flex-col mt-2 mr-4">
+            <div className="flex flex-col mt-2 mr-12 ml-12 ">
               <div className="-my-2 mx-6 overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
                   <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
@@ -290,47 +288,46 @@ export default class Room extends React.Component {
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
-                        {this.state.room.map((item, index) => 
-                      {  
-                        return(
-                          
-                          <tr key={index}>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">
-                                {index + 1}
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm font-medium text-gray-900">
-                                Room-{item.nomor_kamar}
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800">
-                                {item.tipe_kamar?.nama_tipe_kamar}
-                                  </span>
-                            </td>
-                            {this.state.role === "admin" && (
+                        {this.state.room.map((item, index) => {
+                          return (
+                            <tr key={index}>
                               <td className="px-6 py-4 whitespace-nowrap">
-                                <button
-                                  className="bg-green-600 hover:bg-green-700 text-white py-1 px-2 rounded mr-2"
-                                  onClick={() => this.handleEdit(item)}
-                                >
-                                  <FontAwesomeIcon
-                                    icon={faPencilSquare}
-                                    size="lg"
-                                  />
-                                </button>
-                                <button
-                                  className="bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded"
-                                  onClick={() => this.handleDrop(item.id)}
-                                >
-                                  <FontAwesomeIcon icon={faTrash} size="lg" />
-                                </button>
+                                <div className="text-sm text-gray-900">
+                                  {index + 1}
+                                </div>
                               </td>
-                            )}
-                          </tr>
-                        )})}
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="text-sm font-medium text-gray-900">
+                                  Room-{item.nomor_kamar}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800">
+                                  {item.tipe_kamar?.nama_tipe_kamar}
+                                </span>
+                              </td>
+                              {this.state.role === "admin" && (
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                  <button
+                                    className="bg-green-600 hover:bg-green-700 text-white py-1 px-2 rounded mr-2"
+                                    onClick={() => this.handleEdit(item)}
+                                  >
+                                    <FontAwesomeIcon
+                                      icon={faPencilSquare}
+                                      size="lg"
+                                    />
+                                  </button>
+                                  <button
+                                    className="bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded"
+                                    onClick={() => this.handleDrop(item.id)}
+                                  >
+                                    <FontAwesomeIcon icon={faTrash} size="lg" />
+                                  </button>
+                                </td>
+                              )}
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>
@@ -341,7 +338,7 @@ export default class Room extends React.Component {
           <footer className="footer px-4 py-2">
             <div className="footer-content">
               <p className="text-sm text-gray-600 text-center">
-                © Brandname 2023. All rights reserved.
+                Copyright © 2023 Nyaman Hotel
               </p>
             </div>
           </footer>
@@ -378,7 +375,7 @@ export default class Room extends React.Component {
               </button>
               <div className="px-6 py-6 lg:px-8">
                 <h3 className="mb-4 text-xl font-medium text-gray-900 dark:text-black">
-                  Edit Room
+                  Room
                 </h3>
                 <form
                   className="space-y-6"
@@ -394,7 +391,6 @@ export default class Room extends React.Component {
                     <input
                       type="text"
                       name="nomor_kamar"
-                      id="nomor_kamar"
                       value={this.state.nomor_kamar}
                       onChange={this.handleChange}
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-gray-800 block w-full p-2.5 dark:bg-white dark:border-gray-500 dark:placeholder-gray-400 dark:text-gray-800"
@@ -419,11 +415,8 @@ export default class Room extends React.Component {
                     >
                       <option value="">Pilih Room Type</option>
                       {this.state.typeroom.map((item) => (
-                        <option value={item.id}>
-                          {item.nama_tipe_kamar}
-                        </option>
-                      ))
-                      }
+                        <option value={item.id}>{item.nama_tipe_kamar}</option>
+                      ))}
                     </select>
                   </div>
                   <button
@@ -441,6 +434,3 @@ export default class Room extends React.Component {
     );
   }
 }
-
-
-

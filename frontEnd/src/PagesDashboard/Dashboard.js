@@ -1,15 +1,13 @@
 import React from "react";
 import Sidebar from "../Components/Sidebar";
-import Header from "../Components/Header";
 import axios from "axios";
-import "../styles/dashboard.css"
+import "../styles/dashboard.css";
 
 export default class Dashboard extends React.Component {
   constructor() {
     super();
     this.state = {
       user: [],
-      // customer: [],
       tipeKamar: [],
       kamar: [],
       role: "",
@@ -105,7 +103,6 @@ export default class Dashboard extends React.Component {
 
   componentDidMount() {
     this.getUser();
-    // this.getCustomer();
     this.getkamar();
     this.getTipeKamar();
     this.checkRole();
@@ -115,18 +112,18 @@ export default class Dashboard extends React.Component {
     return (
       <div className="flex flex-row min-h-screen bg-gray-100 text-gray-800 dashboard">
         <Sidebar />
-        <main className="main flex flex-col flex-grow -ml-64 md:ml-0 transition-all duration-150 ease-in">
+        <main className="main flex flex-col flex-grow -ml-64 md:ml-64 transition-all duration-150 ease-in">
           <div className="container">
             <h1 className="bold-align-left">
-              Make your<br />
+              Make your
+              <br />
               dreams beautiful
             </h1>
-           
-            <footer className="footer px-4 py-2">
-              <div className="footer-content">
+
+            <footer className="absolute bottom-0 w-full py-2 text-center">
+              <div className="footer-content ">
                 <p className="text-sm text-gray-600 text-center">
-                  © Brandname 2023. All rights reserved.{" "}
-                  <a href="https://twitter.com/iaminos">by Erairris</a>
+                  Copyright © 2023 Nyaman Hotel
                 </p>
               </div>
             </footer>
@@ -136,4 +133,4 @@ export default class Dashboard extends React.Component {
       </div>
     );
   }
-}  
+}

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSignOut, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faSignOut} from "@fortawesome/free-solid-svg-icons";
 
 export default class Navbar extends Component {
   constructor() {
@@ -18,6 +18,7 @@ export default class Navbar extends Component {
 
   logout = () => {
     if (window.confirm("Are you sure to logout?")) {
+      window.location = "/";
       localStorage.clear();
       localStorage.removeItem("id");
       localStorage.removeItem("token");
@@ -35,22 +36,23 @@ export default class Navbar extends Component {
         isLogin: true,
       });
     }
+
   }
 
   render() {
     return (
-      <nav class="bg-gray-50 px-5 sm:px-8 w-full z-20 top-0 left-0 drop-shadow-md md:drop-shadow-xl h-[70px]">
-        <div class="container flex flex-wrap items-center justify-center justify-between mx-auto">
-          {/* <NavLink to="/home" className="hidden lg:block h-10 ml-3 w-10 mr-0 ">
-                        <img src="/assets/logo.png" alt="icon" />
-                    </NavLink> */}
-          <div class="flex md:order-2 -mt-[675px]">
+      <nav class="px-5 sm:px-8 w-full z-20 top-0 left-0 h-[70px]">
+        <div class="container flex flex-wrap items-center justify-between mx-auto">
+          <div to="/home" className="inline-flex h-10 ml-3 w-10 mr-0 mb-[600px]">
+            <img src="/assets/logo.png" alt="icon" />
+            <span class="text-xl font-bold ml-4 uppercase">nyaman</span>
+          </div>
+          <div class="flex md:order-2 -mt-[675px] ">
             {this.state.isLogin ? (
               <>
-                {/* <NavLink to="/home" className="no-underline text-gray-800 hover:text-blue-800 px-3 py-2 rounded-md text-2xl font-medium" aria-current="page" id="profile"><FontAwesomeIcon icon={faUser} /></NavLink> */}
                 <button
                   onClick={() => this.logout()}
-                  className="no-underline text-gray-800 px-3 py-2 hover:text-blue-800 rounded-md text-2xl font-medium"
+                  className="no-underline text-gray-800 px-3 mt-5 hover:text-red-800 rounded-md text-2xl font-medium"
                   aria-current="page"
                 >
                   <FontAwesomeIcon icon={faSignOut} />
@@ -60,7 +62,7 @@ export default class Navbar extends Component {
               <>
                 <NavLink
                   to="/logincust"
-                  className="bg-transparent hover:bg-blue-600 text-blue-600 font-semibold hover:text-white py-2 px-3 border border-blue-500 hover:border-transparent rounded-md mr-4"
+                  className="bg-transparent hover:bg-[#354D51] text-[#354D51] hover:text-[#354D51] mt-5 font-semibold py-2 px-3 border border-[#354D51] rounded-md mr-4"
                   aria-current="page"
                   id="profile"
                   variant="outlined"
@@ -69,7 +71,7 @@ export default class Navbar extends Component {
                 </NavLink>
                 <NavLink
                   to="/registercust"
-                  className="bg-blue-500 hover:bg-blue-600 text-white font-semibold hover:text-white py-2 px-3 border border-blue-500 hover:border-transparent rounded-md "
+                  className="bg-[#354D51] hover:bg-[#354D51] mt-5 text-white font-semibold hover:text-white py-2 px-3 border border-[#354D51] hover:border-transparent rounded-md "
                   aria-current="page"
                   id="profile"
                 >
@@ -79,40 +81,36 @@ export default class Navbar extends Component {
             )}
           </div>
           <div
-            class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1"
+            class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1 bg-green-200"
             id="navbar-sticky"
           >
-            {/* <NavLink to="/home" className="no-underline text-gray-800 hover:bg-blue-600 hover:text-white px-3 py-3 rounded-md text-sm font-medium" aria-current="page">Home</NavLink>
-<NavLink to="/services" className="no-underline text-gray-800 hover:bg-blue-600 hover:text-white px-3 py-3 rounded-md text-sm font-medium " aria-current="page">Services</NavLink>
-<NavLink to="/rooms" className="no-underline text-gray-800 hover:bg-blue-600 hover:text-white px-3 py-3 rounded-md text-sm font-medium " aria-current="page">Rooms</NavLink> */}
-
-            <ul class="flex absolute flex-col top-0 pt-2 left-[500px] md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0 md:bg-white">
+            <ul class="flex absolute flex-col top-0 pt-3 left-[500px] h-[70px] md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0 bg-transparent">
               {this.state.isLogin ? (
                 <>
                   <NavLink
                     to="/home"
-                    className="no-underline text-gray-800 hover:bg-blue-500 hover:text-white px-3 py-3 rounded-md text-sm font-medium"
+                    className="no-underline text-gray-800 px-3 py-3 text-sm font-medium border-[#354D51] hover:bg-[#354D51] hover:text-white p-3 rounded-xl"
                     aria-current="page"
                   >
                     Home
                   </NavLink>
                   <NavLink
                     to="/services"
-                    className="no-underline text-gray-800 hover:bg-blue-500 hover:text-white px-3 py-3 rounded-md text-sm font-medium "
+                    className="no-underline text-gray-800 px-3 py-3 text-sm font-medium border-[#354D51] hover:bg-[#354D51] hover:text-white p-3 rounded-xl"
                     aria-current="page"
                   >
                     Services
                   </NavLink>
                   <NavLink
                     to="/rooms"
-                    className="no-underline text-gray-800 hover:bg-blue-500 hover:text-white px-3 py-3 rounded-md text-sm font-medium "
+                    className="no-underline text-gray-800 px-3 py-3 text-sm font-medium border-[#354D51] hover:bg-[#354D51] hover:text-white p-3 rounded-xl"
                     aria-current="page"
                   >
                     Rooms
                   </NavLink>
                   <NavLink
                     to="/mybookings"
-                    className="no-underline text-gray-800 hover:bg-blue-500 hover:text-white px-3 py-3 rounded-md text-sm font-medium "
+                    className="no-underline text-gray-800 px-3 py-3 text-sm font-medium border-[#354D51] hover:bg-[#354D51] hover:text-white p-3 rounded-xl"
                     aria-current="page"
                   >
                     My Bookings
@@ -120,25 +118,23 @@ export default class Navbar extends Component {
                 </>
               ) : (
                 <>
-                  
-                    <NavLink
-                      to="/home"
-                      className="no-underline text-gray-800 px-3 py-3 hover:border-b-indigo-500 hover:border-b-4 text-sm font-medium"
-                      aria-current="page"
-                    >
-                      Home
-                    </NavLink>
-                 
+                  <NavLink
+                    to="/home"
+                    className="no-underline text-gray-800 px-3 py-3 text-sm font-medium border-[#354D51] hover:bg-[#354D51] hover:text-white p-3 rounded-xl"
+                  >
+                    Home
+                  </NavLink>
+
                   <NavLink
                     to="/services"
-                    className="no-underline text-gray-800 px-3 py-3 hover:border-b-indigo-500 hover:border-b-4 text-sm font-medium"
+                    className="no-underline text-gray-800 px-3 py-3 text-sm font-medium border-[#354D51] hover:bg-[#354D51] hover:text-white p-3 rounded-xl"
                     aria-current="page"
                   >
                     Services
                   </NavLink>
                   <NavLink
                     to="/rooms"
-                    className="no-underline text-gray-800 px-3 py-3 hover:border-b-indigo-500 hover:border-b-4 text-sm font-medium"
+                    className="no-underline text-gray-800 px-3 py-3 text-sm font-medium border-[#354D51] hover:bg-[#354D51] hover:text-white p-3 rounded-xl"
                     aria-current="page"
                   >
                     Rooms

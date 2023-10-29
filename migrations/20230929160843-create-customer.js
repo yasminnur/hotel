@@ -12,14 +12,6 @@ module.exports = {
           allowNull: true,
         },
       ),
-      queryInterface.addColumn(
-        'customers',
-        'nama_tamu',
-        {
-          type: Sequelize.STRING,
-          allowNull: true,
-        },
-      ),
     ]);
   },
 

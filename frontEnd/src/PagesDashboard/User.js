@@ -1,12 +1,10 @@
 import React from "react";
 import Sidebar from "../Components/Sidebar";
-import Header from "../Components/Header";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlus,
   faTrash,
   faPencilSquare,
-  faSearch,
 } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import $ from "jquery";
@@ -28,7 +26,7 @@ export default class User extends React.Component {
     };
 
     this._handleKeyPress = this._handleKeyPress.bind(this);
-    
+
     if (localStorage.getItem("token")) {
       if (
         localStorage.getItem("role") === "admin" ||
@@ -84,8 +82,14 @@ export default class User extends React.Component {
         }
       })
       .catch((error) => {
-        console.log("error", error.response.status);
+        console.log("error add data", error);
+        if (error.response && (error.response.status === 500 || error.response.status === 404 || error.response.status === 400)) {
+          window.alert(error.response.data.message);
+        }
       });
+      // .catch((error) => {
+      //   console.log("error", error.response.status);
+      // });
   };
 
   handleAdd = () => {
@@ -140,11 +144,17 @@ export default class User extends React.Component {
           this.handleClose();
         })
         .catch((error) => {
-          console.log("error add data", error.response.status);
-          if (error.response.status === 500) {
-            window.alert("Failed to add data");
+          console.log("error add data", error);
+          if (error.response && (error.response.status === 500 || error.response.status === 404 || error.response.status === 400)) {
+            window.alert(error.response.data.message);
           }
         });
+        // .catch((error) => {
+        //   console.log("error add data", error.response.status);
+        //   if (error.response.status === 500) {
+        //     window.alert("Failed to add data");
+        //   }
+        // });
     } else {
       let url = "http://localhost:4000/user/update/" + this.state.id;
       axios
@@ -154,8 +164,14 @@ export default class User extends React.Component {
           this.handleClose();
         })
         .catch((error) => {
-          console.log(error);
+          console.log("error add data", error);
+          if (error.response && (error.response.status === 500 || error.response.status === 404 || error.response.status === 400)) {
+            window.alert(error.response.data.message);
+          }
         });
+        // .catch((error) => {
+        //   console.log(error);
+        // });
     }
   };
 
@@ -205,36 +221,39 @@ export default class User extends React.Component {
   }
 
   render() {
-    console.log(this.state.role)
+    console.log(this.state.role);
     return (
       <div className="flex flex-row min-h-screen bg-gray-100 text-gray-800">
         <Sidebar />
-        <main className="main flex flex-col flex-grow -ml-64 md:ml-0 transition-all duration-150 ease-in">
+        <main className="main flex flex-col flex-grow -ml-64 md:ml-64 transition-all duration-150 ease-in">
           <div className="main-content flex flex-col flex-grow p-4">
-          <div className="hidden md:flex relative mb-4">
-              <h1 className="font-bold text-2xl text-gray-700">Type Room</h1>
+            <div className="hidden md:flex relative mb-4">
+              <h1 className="font-bold text-2xl uppercase text-gray-700">
+                User
+              </h1>
             </div>
 
-            <div className="mb-4">
+            <div className=" mb-3">
               <div className="flex items-center ">
                 <div className="flex rounded w-full">
-                <input
+                  <input
                     type="text"
-                    className=" w-full block px-4 py-2 bg-white border-2 border-black/25 rounded-full focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
+                    className="w-[540px] block px-4 py-2 bg-white border-2 border-black/25 rounded-full focus:border-blue-400 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
                     placeholder="Search..."
                     name="keyword"
                     value={this.state.keyword}
                     onChange={this.handleChange}
-                    onKeyPress={this._handleKeyPress}
+                    onKeyUp={this._handleFilter}
                   />
-                  {this.state.role === "admin" && (
+
+                  {localStorage.getItem("role") === "admin" ? (
                     <button
                       className="w-36 ml-2 px-4 font-regular bg-[#354D51]/50 text-black rounded-full hover:bg-blue-700"
                       onClick={() => this.handleAdd()}
                     >
                       <FontAwesomeIcon icon={faPlus} /> Add
                     </button>
-                  )}
+                  ) : null}
                 </div>
               </div>
             </div>
@@ -276,71 +295,74 @@ export default class User extends React.Component {
                           >
                             Role
                           </th>
-                          
-                          {this.state.role === "admin" && (
+
+                          {localStorage.getItem("role") === "admin" ? (
                             <th
                               scope="col"
                               className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                             >
                               Aksi
                             </th>
-                          )}
+                          ) : null}
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
-                        {this.state.user.map((item, index) => {  
-                        return(
-                          <tr key={index}>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">
-                                {index + 1}
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm font-medium text-gray-900">
-                              <img
-                          className="h-10 w-10 rounded-full"
-                          src={"http://localhost:4000/photo/" + item.foto}
-                          alt=""
-                        />
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800">
-                                {item.nama_user}
-                                  </span>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800">
-                                {item.email}
-                                  </span>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800">
-                                {item.role}
-                                  </span>
-                            </td>
-                            {this.state.role === "admin" && (
+                        {this.state.user.map((item, index) => {
+                          return (
+                            <tr key={index}>
                               <td className="px-6 py-4 whitespace-nowrap">
-                                <button
-                                  className="bg-green-600 hover:bg-green-700 text-white py-1 px-2 rounded mr-2"
-                                  onClick={() => this.handleEdit(item)}
-                                >
-                                  <FontAwesomeIcon
-                                    icon={faPencilSquare}
-                                    size="lg"
-                                  />
-                                </button>
-                                <button
-                                  className="bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded"
-                                  onClick={() => this.handleDrop(item.id)}
-                                >
-                                  <FontAwesomeIcon icon={faTrash} size="lg" />
-                                </button>
+                                <div className="text-sm text-gray-900">
+                                  {index + 1}
+                                </div>
                               </td>
-                            )}
-                          </tr>
-                        )})}
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="text-sm font-medium text-gray-900">
+                                  <img
+                                    className="h-10 w-10 rounded-full"
+                                    src={
+                                      "http://localhost:4000/photo/" + item.foto
+                                    }
+                                    alt=""
+                                  />
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800">
+                                  {item.nama_user}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800">
+                                  {item.email}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800">
+                                  {item.role}
+                                </span>
+                              </td>
+                              {localStorage.getItem("role") === "admin" ? (
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                  <button
+                                    className="bg-green-600 hover:bg-green-700 text-white py-1 px-2 rounded mr-2"
+                                    onClick={() => this.handleEdit(item)}
+                                  >
+                                    <FontAwesomeIcon
+                                      icon={faPencilSquare}
+                                      size="lg"
+                                    />
+                                  </button>
+                                  <button
+                                    className="bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded"
+                                    onClick={() => this.handleDrop(item.id)}
+                                  >
+                                    <FontAwesomeIcon icon={faTrash} size="lg" />
+                                  </button>
+                                </td>
+                              ) : null}
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>

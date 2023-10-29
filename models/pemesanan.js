@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   pemesanan.init({
-    nomor_pemesanan: DataTypes.INTEGER,
+    nomor_pemesanan: DataTypes.STRING,
     nama_pemesan: DataTypes.STRING,
     email_pemesan: DataTypes.STRING,
     tgl_pemesanan: DataTypes.DATE,
